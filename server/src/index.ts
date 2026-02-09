@@ -11,7 +11,7 @@ import './worker'; // Start the BullMQ worker
 const app = express();
 
 app.use(cors({
-    origin: [config.clientUrl, 'https://reach-inbox-task-sable.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: [config.clientUrl, 'https://reachinbox-chi.vercel.app', 'https://reach-inbox-task-sable.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
