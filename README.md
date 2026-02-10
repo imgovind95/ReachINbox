@@ -1,13 +1,9 @@
 <div align="center">
 
-# 🚀 ReachInbox Assignment
+#  ReachInbox Assignment
 ### The Ultimate Full-Stack Email Scheduling Platform
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
-![Node.js](https://img.shields.io/badge/Node.js-20-green?style=for-the-badge&logo=node.js)
-![Redis](https://img.shields.io/badge/Redis-BullMQ-red?style=for-the-badge&logo=redis)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Prisma-blue?style=for-the-badge&logo=postgresql)
+**TypeScript** • **Next.js 14** • **Node.js 20** • **Redis (BullMQ)** • **PostgreSQL (Prisma)**
 
 <p align="center">
   <a href="#-key-features">Key Features</a> •
