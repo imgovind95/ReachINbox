@@ -2,7 +2,7 @@
 
 This is a custom implementation of the ReachInbox selection task. It features a full-stack architecture with a unique registration flow and optimized user experience, presented in a modern split-screen layout.
 
-## 🚀 Unique Features (Why this is *Your* Project)
+## Unique Features (Why this is *Your* Project)
 
 Unlike standard implementations, this project includes:
 
