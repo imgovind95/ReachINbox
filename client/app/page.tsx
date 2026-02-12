@@ -38,14 +38,25 @@ export default function Home() {
 
     setIsCredentialsLoading(true);
     try {
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        name: isRegistering ? name : undefined, // Only pass name if registering
-        callbackUrl: '/dashboard'
+        name: isRegistering ? name : undefined,
+        callbackUrl: '/dashboard',
+        redirect: false,
       });
+
+      if (result?.error) {
+        alert(`Login Failed: ${result.error}`);
+        setIsCredentialsLoading(false);
+      } else if (result?.url) {
+        router.push('/dashboard');
+      } else {
+        setIsCredentialsLoading(false);
+      }
     } catch (error) {
       console.error("Login failed", error);
+      alert("An unexpected error occurred.");
       setIsCredentialsLoading(false);
     }
   };
