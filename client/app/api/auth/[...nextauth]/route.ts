@@ -26,20 +26,27 @@ const handler = NextAuth({
                 if (!credentials?.email || !credentials?.password) return null;
                 try {
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+                    console.log("Attempting login with API URL:", apiUrl);
+
                     const payload = {
                         email: credentials.email,
                         name: credentials.name,
                         avatar: '',
                         googleId: `dummy-${credentials.email}`,
                     };
+                    console.log("Login Payload:", JSON.stringify(payload));
+
                     const response = await fetch(`${apiUrl}/api/auth/google`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
                     });
+
                     if (response.ok) {
                         const data = await response.json();
                         return data.user ? { ...data.user, id: data.user.id } : null;
+                    } else {
+                        console.error("Login failed with status:", response.status, await response.text());
                     }
                 } catch (error) {
                     console.error("Credentials Auth Failed:", error);
@@ -70,6 +77,8 @@ const handler = NextAuth({
             if (!token.backendId && token.email && account?.provider === 'google') {
                 try {
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+                    console.log("Syncing Google user with API URL:", apiUrl);
+
                     const response = await fetch(`${apiUrl}/api/auth/google`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -86,6 +95,8 @@ const handler = NextAuth({
                         if (data.user?.id) {
                             token.backendId = data.user.id;
                         }
+                    } else {
+                        console.error("Google Sync failed:", response.status, await response.text());
                     }
                 } catch (error) {
                     console.error("Backend Sync Error:", error);
