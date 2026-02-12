@@ -1,20 +1,20 @@
 import { Worker, Job } from 'bullmq';
-import { prisma } from './config/db';
-import { redisConnection } from './config/redis';
-import { sendEmail } from './services/emailService';
-import { config } from './config/env';
-import { EmailJobData } from './types';
+import { prisma } from '../config/db';
+import { redisConnection } from '../config/redis';
+import { dispatchEmail } from '../utils/mailer';
+import { config } from '../config/env';
+import { EmailJobData } from '../types';
 
-const EMAIL_QUEUE_NAME = 'email-queue';
+const JOB_QUEUE_NAME = 'email-queue';
 const MIN_DELAY_MS = 2000; // Default minimum delay
 
 // Queue Configuration is done where the queue is instantiated (in routes/schedule.ts or separate file)
 // Here we define the Worker
 
-console.log("Worker initialized and listening to queue:", EMAIL_QUEUE_NAME);
+console.log("Job Processor initialized and listening to queue:", JOB_QUEUE_NAME);
 
-export const emailWorker = new Worker<EmailJobData>(EMAIL_QUEUE_NAME, async (job: Job<EmailJobData>) => {
-    console.log(`[Worker] Picked up job ${job.id}`);
+export const jobProcessor = new Worker<EmailJobData>(JOB_QUEUE_NAME, async (job: Job<EmailJobData>) => {
+    console.log(`[Processor] Picked up job ${job.id}`);
     const { recipient, subject, body, userId, emailJobId, attachments, hourlyLimit, minDelay } = job.data;
 
     // Use job specific limit or global config
@@ -42,7 +42,7 @@ export const emailWorker = new Worker<EmailJobData>(EMAIL_QUEUE_NAME, async (job
 
     // 2. Process Email
     try {
-        console.log(`Sending email to ${recipient} (Job ${job.id}, DB ID ${emailJobId})`);
+        console.log(`Dispatching email to ${recipient} (Job ${job.id}, DB ID ${emailJobId})`);
 
         // Fetch Sender Info
         const sender = await prisma.user.findUnique({ where: { id: userId } });
@@ -74,10 +74,10 @@ export const emailWorker = new Worker<EmailJobData>(EMAIL_QUEUE_NAME, async (job
         const shortJobId = job.id?.slice(-6).toUpperCase() || 'REF#000';
         personalizedSubject = `${personalizedSubject} | ${shortJobId}`;
 
-        const { previewUrl } = await sendEmail(recipient, personalizedSubject, personalizedBody, attachments, fromName, fromEmail);
+        const { previewUrl } = await dispatchEmail(recipient, personalizedSubject, personalizedBody, attachments, fromName, fromEmail);
 
         if (previewUrl) {
-            console.log(`[Worker] Saved Preview URL for job ${job.id}: ${previewUrl}`);
+            console.log(`[Processor] Saved Preview URL for job ${job.id}: ${previewUrl}`);
         }
 
         // Update DB status
@@ -118,10 +118,10 @@ export const emailWorker = new Worker<EmailJobData>(EMAIL_QUEUE_NAME, async (job
     }
 });
 
-emailWorker.on('completed', job => {
+jobProcessor.on('completed', job => {
     console.log(`${job.id} has completed!`);
 });
 
-emailWorker.on('failed', (job, err) => {
+jobProcessor.on('failed', (job, err) => {
     console.log(`${job?.id} has failed with ${err.message}`);
 });

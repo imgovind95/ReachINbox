@@ -1,10 +1,10 @@
 import nodemailer from 'nodemailer';
 
-export const sendEmail = async (to: string, subject: string, html: string, attachments?: any[], fromName: string = "ReachInbox Scheduler", fromEmail: string = "scheduler@reachinbox.com") => {
+export const dispatchEmail = async (to: string, subject: string, html: string, attachments?: any[], fromName: string = "ReachInbox Scheduler", fromEmail: string = "scheduler@reachinbox.com") => {
     // Create a test account if not using real credentials
     const testAccount = await nodemailer.createTestAccount();
 
-    const transporter = nodemailer.createTransport({
+    const mailTransport = nodemailer.createTransport({
         host: testAccount.smtp.host,
         port: testAccount.smtp.port,
         secure: testAccount.smtp.secure,
@@ -14,7 +14,7 @@ export const sendEmail = async (to: string, subject: string, html: string, attac
         },
     });
 
-    const info = await transporter.sendMail({
+    const info = await mailTransport.sendMail({
         from: `"${fromName}" <${fromEmail}>`, // sender address
         to, // list of receivers
         subject, // Subject line

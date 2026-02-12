@@ -1,0 +1,65 @@
+[2026-02-12T15:49:06.786Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:49:06.791Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:49:07.143Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:49:07.144Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:49:07.165Z] NEXTAUTH_WARN: "DEBUG_ENABLED"
+[2026-02-12T15:50:33.218Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:50:33.219Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:50:33.270Z] NEXTAUTH_WARN: "DEBUG_ENABLED"
+[2026-02-12T15:50:33.275Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:33.280Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:33.345Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:33.348Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:33.380Z] CALLBACK: redirect {"url":"/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:33.522Z] NEXTAUTH_DEBUG: {"code":"GET_AUTHORIZATION_URL","metadata":{"url":"https://accounts.google.com/o/oauth2/v2/auth?client_id=1082611406821-9gji3dsi9ldncvoa9thdqhcsucko9n0l.apps.googleusercontent.com&scope=openid%20email%20profile&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fapi%2Fauth%2Fcallback%2Fgoogle&prompt=consent&access_type=offline","cookies":[],"provider":{"id":"google","name":"Google","type":"oauth","wellKnown":"https://accounts.google.com/.well-known/openid-configuration","authorization":{"params":{"scope":"openid email profile","prompt":"consent","access_type":"offline","response_type":"code"}},"idToken":true,"checks":["none"],"style":{"logo":"/google.svg","bg":"#fff","text":"#000"},"clientId":"1082611406821-9gji3dsi9ldncvoa9thdqhcsucko9n0l.apps.googleusercontent.com","clientSecret":"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","signinUrl":"http://localhost:3001/api/auth/signin/google","callbackUrl":"http://localhost:3001/api/auth/callback/google"}}}
+[2026-02-12T15:50:33.645Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:50:33.647Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:50:41.722Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:42.096Z] NEXTAUTH_ERROR: {"code":"OAUTH_CALLBACK_ERROR","metadata":{"error":{"name":"OAuthCallbackError","message":"invalid_client (Unauthorized)","stack":"OPError: invalid_client (Unauthorized)\n    at processResponse (webpack-internal:///(rsc)/./node_modules/openid-client/lib/helpers/process_response.js:38:13)\n    at Client.grant (webpack-internal:///(rsc)/./node_modules/openid-client/lib/client.js:1220:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Client.callback (webpack-internal:///(rsc)/./node_modules/openid-client/lib/client.js:432:30)\n    at async oAuthCallback (webpack-internal:///(rsc)/./node_modules/next-auth/core/lib/oauth/callback.js:94:16)\n    at async Object.callback (webpack-internal:///(rsc)/./node_modules/next-auth/core/routes/callback.js:45:11)\n    at async AuthHandler (webpack-internal:///(rsc)/./node_modules/next-auth/core/index.js:184:28)\n    at async NextAuthRouteHandler (webpack-internal:///(rsc)/./node_modules/next-auth/next/index.js:57:28)\n    at async NextAuth._args$ (webpack-internal:///(rsc)/./node_modules/next-auth/next/index.js:89:16)\n    at async C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.dev.js:6:57228\n    at async eT.execute (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.dev.js:6:46851)\n    at async eT.handle (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\compiled\\next-server\\app-route.runtime.dev.js:6:58760)\n    at async doRender (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:1366:42)\n    at async cacheEntry.responseCache.get.routeKind (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:1576:40)\n    at async DevServer.renderToResponseWithComponentsImpl (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:1496:28)\n    at async DevServer.renderPageComponent (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:1924:24)\n    at async DevServer.renderToResponseImpl (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:1962:32)\n    at async DevServer.pipeImpl (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:922:25)\n    at async NextNodeServer.handleCatchallRenderRequest (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\next-server.js:272:17)\n    at async DevServer.handleRequestImpl (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\base-server.js:818:17)\n    at async C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:339:20\n    at async Span.traceAsyncFn (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\trace\\trace.js:154:20)\n    at async DevServer.handleRequest (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:336:24)\n    at async invokeRender (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\lib\\router-server.js:179:21)\n    at async handleRequest (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\lib\\router-server.js:359:24)\n    at async requestHandlerImpl (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\lib\\router-server.js:383:13)\n    at async Server.requestListener (C:\\Users\\govin\\OneDrive\\Desktop\\ReachInbox-Task-main\\client\\node_modules\\next\\dist\\server\\lib\\start-server.js:141:13)"},"providerId":"google"}}
+[2026-02-12T15:50:42.138Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:42.146Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:50:42.148Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:50:42.191Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:42.603Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:50:42.605Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T15:50:42.935Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:42.977Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T15:50:43.424Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T15:50:43.426Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:15.014Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:15.018Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:16.008Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:16.011Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:16.105Z] NEXTAUTH_WARN: "DEBUG_ENABLED"
+[2026-02-12T19:12:16.110Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:16.117Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:16.128Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:16.130Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:16.132Z] NEXTAUTH_ERROR: {"code":"CLIENT_FETCH_ERROR","metadata":{"error":"[object Object]","url":"/api/auth/session","message":"Failed to fetch","client":"true"}}
+[2026-02-12T19:12:16.136Z] NEXTAUTH_ERROR: {"code":"CLIENT_FETCH_ERROR","metadata":{"error":"[object Object]","url":"/api/auth/session","message":"Failed to fetch","client":"true"}}
+[2026-02-12T19:12:16.905Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:16.907Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:16.940Z] NEXTAUTH_WARN: "DEBUG_ENABLED"
+[2026-02-12T19:12:16.945Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:16.999Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:17.598Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:17.600Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:24.715Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:24.717Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:24.736Z] NEXTAUTH_WARN: "DEBUG_ENABLED"
+[2026-02-12T19:12:24.738Z] CALLBACK: redirect {"url":"http://localhost:3001/dashboard","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:24.773Z] CALLBACK: redirect {"url":"/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:25.323Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:25.325Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:25.639Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:25.671Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:26.187Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:26.192Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:30.210Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:30.274Z] CALLBACK: redirect {"url":"/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:30.798Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:30.800Z] GOOGLE_CLIENT_ID: "Loaded"
+[2026-02-12T19:12:31.069Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:31.103Z] CALLBACK: redirect {"url":"http://localhost:3001/","baseUrl":"http://localhost:3001"}
+[2026-02-12T19:12:31.587Z] --- NEW SERVER INSTANCE STARTED --- 
+[2026-02-12T19:12:31.590Z] GOOGLE_CLIENT_ID: "Loaded"
