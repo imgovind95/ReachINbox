@@ -36,31 +36,33 @@ export default function Sidebar() {
       try {
         // Fetch Sent/Scheduled
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/${(session.user as any).id}`);
+
+        if (!res.ok) {
+          console.error("Fetch counts failed:", res.status);
+          return; // Don't update state on error!
+        }
+
+        const data = await res.json();
         let scheduled = 0;
         let sent = 0;
         let inbox = 0;
 
-        if (res.ok) {
-          const data = await res.json();
-          const now = new Date();
-          // Split by time: Future -> Scheduled, Past/Present -> Sent
-          scheduled = data.filter((job: any) => {
-            if (job.status === 'PENDING' || job.status === 'DELAYED') {
-              return new Date(job.scheduledAt) > now;
-            }
-            return false;
-          }).length;
+        const now = new Date();
+        // Split by time: Future -> Scheduled, Past/Present -> Sent
+        scheduled = data.filter((job: any) => {
+          if (job.status === 'PENDING' || job.status === 'DELAYED') {
+            return new Date(job.scheduledAt) > now;
+          }
+          return false;
+        }).length;
 
-          sent = data.filter((job: any) => {
-            if (job.status === 'COMPLETED') return true;
-            if (job.status === 'PENDING' || job.status === 'DELAYED') {
-              return new Date(job.scheduledAt) <= now;
-            }
-            return false;
-          }).length;
-        } else {
-          console.error("Fetch counts failed:", res.status);
-        }
+        sent = data.filter((job: any) => {
+          if (job.status === 'COMPLETED') return true;
+          if (job.status === 'PENDING' || job.status === 'DELAYED') {
+            return new Date(job.scheduledAt) <= now;
+          }
+          return false;
+        }).length;
 
         // Fetch Inbox Count
         if (session.user.email) {
@@ -86,10 +88,10 @@ export default function Sidebar() {
     };
     window.addEventListener('refresh-sidebar', handleRefresh);
 
-    // Poll every 5s (reduced from 1s to stop "reloading" feel)
+    // Poll every 15s (reduced from 5s to stop "reloading" feel)
     const interval = setInterval(() => {
       if (session && !document.hidden) fetchCounts();
-    }, 5000);
+    }, 15000);
     return () => {
       clearInterval(interval);
       window.removeEventListener('refresh-sidebar', handleRefresh);
