@@ -1,23 +1,14 @@
-<div align="center">
-
 # ReachInbox Assignment
+
 ### The Ultimate Full-Stack Email Scheduling Platform
 
-**TypeScript** • **Next.js 14** • **Node.js 20** • **Redis (BullMQ)** • **PostgreSQL (Prisma)**
+**TypeScript • Next.js 14 • Node.js 20 • Redis (BullMQ) • PostgreSQL (Prisma)**
 
-<p align="center">
-  <a href="#-key-features">Key Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-getting-started">Getting Started</a> •
-  <a href="#-deployment">Deployment</a>
-</p>
-
-</div>
+[Key Features](#key-features) • [Tech Stack](#tech-stack) • [Architecture](#architecture) • [Getting Started](#getting-started) • [Deployment](#deployment)
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 
 **ReachInbox** is a production-grade One-on-One cold email outreach platform. It allows users to schedule personalized emails to be sent at a future date and time.
 
@@ -27,18 +18,18 @@ Unlike standard implementations, this project features a **custom Split-Screen D
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🔐 Advanced Authentication
+### Advanced Authentication
 - **Dual Auth System**: Seamlessly combine Google OAuth with a custom registration step to capture user details.
 - **Secure Session Management**: Powered by `NextAuth.js`.
 
-### 🎨 Modern UI/UX
+### Modern UI/UX
 - **Split Layout**: A professional, branded left-panel and focused right-panel for login/registration.
 - **Client-Side Validation**: Real-time feedback and dynamic form adjustments.
 - **Theme**: Clean, accessible, and responsive design using **TailwindCSS**.
 
-### ⚙️ Powerful Backend
+### Powerful Backend
 - **Precision Scheduling**: Uses **BullMQ** and **Redis** to handle delayed jobs with millisecond precision.
 - **Fault Tolerance**: Persistent Redis queues ensure no scheduled email is ever lost.
 - **Instant Feedback**: Optimized status updates provide immediate "Delivered" feedback for instant emails.
@@ -47,31 +38,31 @@ Unlike standard implementations, this project features a **custom Split-Screen D
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 The backend follows a strict **Separation of Concerns** principle:
 
-- **Controllers (`/controllers`)**: Handle HTTP requests, validation, and responses.
-- **Services (`/services`)**: Contain business logic and database interactions.
-- **Jobs (`/jobs`)**: Background workers (e.g., `EmailProcessor`) for async tasks.
-- **Validators (`/validators`)**: Zod schemas for robust input validation.
-- **Utils (`/utils`)**: Centralized logging and error handling.
+- **Controllers (/controllers)**: Handle HTTP requests, validation, and responses.
+- **Services (/services)**: Contain business logic and database interactions.
+- **Jobs (/jobs)**: Background workers (e.g., `EmailProcessor`) for async tasks.
+- **Validators (/validators)**: Zod schemas for robust input validation.
+- **Utils (/utils)**: Centralized logging and error handling.
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Component | Technology | Description |
 | :--- | :--- | :--- |
-| **Frontend** | ![Next.js](https://img.shields.io/badge/-Next.js-black) ![Tailwind](https://img.shields.io/badge/-Tailwind-38B2AC) | Next.js 14, React 19, Lucide Icons |
-| **Backend** | ![Node.js](https://img.shields.io/badge/-Node.js-green) ![Express](https://img.shields.io/badge/-Express-black) | TypeScript, Express.js |
-| **Database** | ![Postgres](https://img.shields.io/badge/-PostgreSQL-336791) ![Prisma](https://img.shields.io/badge/-Prisma-1B222D) | Managed via Supabase/Render |
-| **Queue** | ![Redis](https://img.shields.io/badge/-Redis-DC382D) | BullMQ for job scheduling |
-| **DevOps** | ![Docker](https://img.shields.io/badge/-Docker-2496ED) | Docker Compose for local dev |
+| **Frontend** | **Next.js**, **TailwindCSS** | Next.js 14, React 19, Lucide Icons |
+| **Backend** | **Node.js**, **Express** | TypeScript, Express.js |
+| **Database** | **PostgreSQL**, **Prisma** | Managed via Supabase/Render |
+| **Queue** | **Redis** | BullMQ for job scheduling |
+| **DevOps** | **Docker** | Docker Compose for local dev |
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to run the project locally.
 
@@ -111,7 +102,7 @@ npm run dev
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 The system is designed for easy deployment on **Render** (Backend) and **Vercel** (Frontend).
 
@@ -128,13 +119,11 @@ The system is designed for easy deployment on **Render** (Backend) and **Vercel*
 
 ---
 
-## 👤 Author
+## Author
 
 **Govind Kumar**
 - Github: [@imgovind95](https://github.com/imgovind95)
 
 ---
 
-<div align="center">
-  <sub>Built for ReachInbox Assessment</sub>
-</div>
+Built for ReachInbox Assessment
