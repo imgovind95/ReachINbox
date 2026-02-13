@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq';
 import { prisma } from '../config/db';
-import { redisConnection } from '../config/redis';
+import { redisConnection, createRedisConnection } from '../config/redis';
 import { dispatchEmail } from '../utils/mailer';
 import { config } from '../config/env';
 import { EmailJobData } from '../types';
@@ -110,7 +110,7 @@ export const jobProcessor = new Worker<EmailJobData>(JOB_QUEUE_NAME, async (job:
     }
 
 }, {
-    connection: redisConnection as any,
+    connection: createRedisConnection() as any,
     concurrency: config.workerConcurrency, // Use config
     limiter: {
         max: 10, // BullMQ internal limiter (safety net)

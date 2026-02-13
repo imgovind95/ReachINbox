@@ -1,12 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { Queue } from 'bullmq';
-import { redisConnection } from '../config/redis';
+import { redisConnection, createRedisConnection } from '../config/redis';
 import { prisma } from '../config/db';
 import { z } from 'zod';
 import { EmailJobData, ScheduleEmailRequest, ScheduleEmailResponse } from '../types';
 
 const campaignRouter = Router();
-const campaignQueue = new Queue<EmailJobData>('email-queue', { connection: redisConnection as any });
+const campaignQueue = new Queue<EmailJobData>('email-queue', { connection: createRedisConnection() as any });
 
 const emailPayloadSchema = z.object({
     recipient: z.string().email(),
@@ -63,7 +63,7 @@ campaignRouter.post('/', async (req: Request<{}, {}, ScheduleEmailRequest>, res:
             attachments
         };
 
-        const queuedJob = await campaignQueue.add('dispatch-email', queueMetadata, {
+        const queuedJob = await campaignQueue.add('dispatch-email' as any, queueMetadata, {
             delay: executionDelay,
             jobId: jobEntry.id
         });
