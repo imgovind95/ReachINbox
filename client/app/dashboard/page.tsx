@@ -7,6 +7,6 @@ import { redirect } from 'next/navigation';
 export default function DashboardPage() {
   // Enforce redirection to the default view
   redirect('/dashboard/scheduled');
-
+  
   return null; // Should not be reached
 }
