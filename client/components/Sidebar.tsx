@@ -25,58 +25,51 @@ export default function Sidebar() {
     async function fetchCounts() {
       if (!session?.user) return;
 
-      // Debug: Log to see if we have the ID
-      console.log("Fetching counts for user:", (session.user as any).id);
+      // 1. Fetch Sent/Scheduled
+      if ((session.user as any).id) {
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/${(session.user as any).id}`);
+          if (res.ok) {
+            const data = await res.json();
+            const now = new Date();
 
-      if (!(session.user as any).id) {
-        console.warn("User ID is missing in session. Login sync might have failed.");
-        return;
+            const scheduled = data.filter((job: any) => {
+              if (job.status === 'PENDING' || job.status === 'DELAYED') {
+                return new Date(job.scheduledAt) > now;
+              }
+              return false;
+            }).length;
+
+            const sent = data.filter((job: any) => {
+              if (job.status === 'COMPLETED') return true;
+              if (job.status === 'PENDING' || job.status === 'DELAYED') {
+                return new Date(job.scheduledAt) <= now;
+              }
+              return false;
+            }).length;
+
+            // Update only scheduled and sent, keep inbox as is
+            setCounts(prev => ({ ...prev, scheduled, sent }));
+          }
+        } catch (err) {
+          console.error("Failed to fetch schedule counts", err);
+          // Do not reset counts on error
+        }
       }
 
-      try {
-        // Fetch Sent/Scheduled
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/${(session.user as any).id}`);
-
-        if (!res.ok) {
-          console.error("Fetch counts failed:", res.status);
-          return; // Don't update state on error!
-        }
-
-        const data = await res.json();
-        let scheduled = 0;
-        let sent = 0;
-        let inbox = 0;
-
-        const now = new Date();
-        // Split by time: Future -> Scheduled, Past/Present -> Sent
-        scheduled = data.filter((job: any) => {
-          if (job.status === 'PENDING' || job.status === 'DELAYED') {
-            return new Date(job.scheduledAt) > now;
-          }
-          return false;
-        }).length;
-
-        sent = data.filter((job: any) => {
-          if (job.status === 'COMPLETED') return true;
-          if (job.status === 'PENDING' || job.status === 'DELAYED') {
-            return new Date(job.scheduledAt) <= now;
-          }
-          return false;
-        }).length;
-
-        // Fetch Inbox Count
-        if (session.user.email) {
+      // 2. Fetch Inbox Count
+      if (session.user.email) {
+        try {
           const resInbox = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule/inbox/${session.user.email}`);
           if (resInbox.ok) {
             const dataInbox = await resInbox.json();
-            inbox = dataInbox.length;
+            // Update only inbox, keep others as is
+            setCounts(prev => ({ ...prev, inbox: dataInbox.length }));
           }
+        } catch (err) {
+          console.error("Failed to fetch inbox count", err);
+          // Do not reset counts on error
         }
-
-        setCounts({ scheduled, sent, inbox });
-
-      } catch (err) {
-        console.error("Failed to fetch sidebar counts", err);
       }
     }
 
@@ -88,10 +81,11 @@ export default function Sidebar() {
     };
     window.addEventListener('refresh-sidebar', handleRefresh);
 
-    // Poll every 15s (reduced from 5s to stop "reloading" feel)
+    // Poll every 8s (User requested)
     const interval = setInterval(() => {
       if (session && !document.hidden) fetchCounts();
-    }, 15000);
+    }, 8000);
+
     return () => {
       clearInterval(interval);
       window.removeEventListener('refresh-sidebar', handleRefresh);
