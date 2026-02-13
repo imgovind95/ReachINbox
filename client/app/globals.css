@@ -1,11 +1,9 @@
+@import "tailwindcss";
+
 /**
  * Global Stylesheet
  * Integrates TailwindCSS layers and custom utility overrides.
  */
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /*
   Reset and Base Styles
