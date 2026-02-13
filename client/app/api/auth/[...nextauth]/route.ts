@@ -116,11 +116,23 @@ const handler = NextAuth({
             return session;
         },
         async redirect({ url, baseUrl }) {
-            // Priority: Dashboard
-            if (url.includes("/dashboard")) return `${baseUrl}/dashboard`;
-            // Internal relative paths
-            if (url.startsWith("/")) return `${baseUrl}${url}`;
-            return baseUrl;
+            // 1. Explicit Dashboard Redirection (Most Important)
+            if (url.includes("/dashboard")) {
+                return `${baseUrl}/dashboard`;
+            }
+
+            // 2. If url is root (login page) and we are redirecting (implies login success), go to dashboard
+            if (url === baseUrl || url === `${baseUrl}/`) {
+                return `${baseUrl}/dashboard`;
+            }
+
+            // 3. Internal relative paths
+            if (url.startsWith("/")) {
+                return `${baseUrl}${url}`;
+            }
+
+            // 4. Default fallback
+            return `${baseUrl}/dashboard`;
         }
     },
     pages: {

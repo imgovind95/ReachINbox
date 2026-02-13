@@ -19,10 +19,16 @@ export default function Home() {
     // Check for userId in URL (returned from backend oauth)
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('userId');
+
     if (userId) {
+      // If we have a userId, it means backend auth succeeded but maybe session sync failed or is manual.
+      // We try to sign in with credentials using this ID.
       signIn('credentials', { userId, callbackUrl: '/dashboard' });
-    } else if (session) {
-      router.push('/dashboard');
+    } else if (session?.user) {
+      // If session exists, FORCE redirect
+      if (window.location.pathname === '/') {
+        router.replace('/dashboard');
+      }
     }
   }, [session, router]);
 
