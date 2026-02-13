@@ -2,6 +2,7 @@
 
 import { Search, Filter, RotateCcw, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 interface EmailItem {
     id: string;
@@ -9,7 +10,7 @@ interface EmailItem {
     sender?: string; // Added sender support
     subject: string;
     body: string;
-    status: 'scheduled' | 'sent' | 'inbox' | 'failed'; // Added inbox status
+    status: 'scheduled' | 'sent' | 'inbox' | 'failed' | 'sending'; // Added failed/sending
     date: string;
     previewUrl?: string; // Ethereal Preview
 }
@@ -94,12 +95,14 @@ const EmailListItem = ({ item }: { item: EmailItem }) => {
                             {item.date}
                         </span>
                     ) : item.status === 'failed' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100 text-[10px] font-medium tracking-wide">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-medium tracking-wide">
                             Failed
                         </span>
                     ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium tracking-wide">
-                            {item.status === 'inbox' ? 'Inbox' : 'Sent'}
+                        <span className={clsx("inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide",
+                            item.status === 'sending' ? "bg-blue-50 text-blue-600" : "bg-gray-100 text-gray-600"
+                        )}>
+                            {item.status === 'inbox' ? 'Inbox' : (item.status === 'sending' ? 'Sending...' : 'Sent')}
                         </span>
                     )}
                 </div>
