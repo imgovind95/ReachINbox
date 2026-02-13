@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,7 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// --- Data Models ---
 
+// User Account Model
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -16,30 +21,38 @@ model User {
   googleId  String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Relations
   jobs      EmailJob[]
 }
 
+// Scheduled Email Job Model
 model EmailJob {
   id              String   @id @default(uuid())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
+  
   recipient       String
   subject         String
   body            String
-  status          String   @default("PENDING") // PENDING, COMPLETED, FAILED, DELAYED
+  
+  // Job Status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'DELAYED'
+  status          String   @default("PENDING") 
+  
   scheduledAt     DateTime
   sentAt          DateTime?
-  messageId       String?
+  messageId       String? // Email provider message ID
+  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
-  // For idempotency and tracking
-  jobId           String? // BullMQ Job ID
-  attachments     Json?   // Store attachment metadata: [{ filename, path, size }]
-  previewUrl      String? // Ethereal Preview URL
+  // Advanced Tracking & Metadata
+  jobId           String? // Linked BullMQ Job ID
+  attachments     Json?   // Array of attachment metadata objects
+  previewUrl      String? // URL for previewing the email (dev mode)
 }
 
-// Optional: for custom rate limiting tracking in DB if Redis persistence isn't enough
+// Rate Limiting Model (Optional / Future Use)
 model RateLimit {
   id        String   @id @default(uuid())
   userId    String

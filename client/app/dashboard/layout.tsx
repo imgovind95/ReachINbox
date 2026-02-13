@@ -1,16 +1,20 @@
 'use client';
 
 import Sidebar from '@/components/Sidebar';
+import { ReactNode } from 'react';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+/**
+ * Main Layout for the authenticated dashboard.
+ * Includes the persistent Sidebar and the main content area.
+ */
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white" id="dashboard-root">
+      {/* Navigation Sidebar */}
       <Sidebar />
-      <main className="flex-1 min-w-0 bg-white">
+
+      {/* Main Content Area */}
+      <main className="flex-1 min-w-0 bg-white relative">
         {children}
       </main>
     </div>

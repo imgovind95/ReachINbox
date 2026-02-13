@@ -1,27 +1,37 @@
 import Redis from 'ioredis';
 import { config } from './env';
 
-const redisOptions = {
+const commonOptions = {
     maxRetriesPerRequest: null,
-    retryStrategy: (times: number) => Math.min(times * 50, 2000)
+    enableReadyCheck: true,
+    retryStrategy: (times: number) => {
+        // Exponential backoff with a cap of 2000ms
+        return Math.min(times * 50, 2000);
+    }
 };
 
-export const createRedisConnection = () => {
-    return config.redisUrl
-        ? new Redis(config.redisUrl, redisOptions)
-        : new Redis({
-            ...redisOptions,
-            host: config.redis.host,
-            port: config.redis.port,
-        });
+/**
+ * Initializes the Redis connection based on environment configuration.
+ * Supports both URL-based and individual parameter-based connections.
+ */
+export const initializeRedis = () => {
+    if (config.redisUrl) {
+        return new Redis(config.redisUrl, commonOptions);
+    }
+
+    return new Redis({
+        ...commonOptions,
+        host: config.redis.host,
+        port: config.redis.port,
+    });
 };
 
-export const redisConnection = createRedisConnection();
+export const redisConnection = initializeRedis();
 
 redisConnection.on('error', (err) => {
-    console.error('Redis connection error:', err);
+    console.error('[Redis] Connection Error:', err);
 });
 
 redisConnection.on('connect', () => {
-    console.log('Connected to Redis');
+    console.log('[Redis] Connection Established Successfully');
 });
