@@ -20,3 +20,18 @@ body {
       transparent,
       rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
+
+/* Stealth Refactoring: Custom Component Classes */
+@layer components {
+  .btn-primary {
+    @apply w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-md transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer;
+  }
+  
+  .btn-social {
+    @apply w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-medium py-3 px-4 rounded-md flex items-center justify-center gap-3 transition-colors cursor-pointer;
+  }
+
+  .input-field {
+    @apply w-full bg-gray-50 text-gray-900 placeholder-gray-500 px-4 py-3 rounded-md border border-gray-200 focus:border-green-500 focus:bg-white outline-none transition-all;
+  }
+}
