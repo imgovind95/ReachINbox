@@ -11,7 +11,23 @@ import './jobs/processor'; // Initialize Background Processor
 const apiServer = express();
 
 apiServer.use(cors({
-    origin: [config.clientUrl, 'https://reachinbox-chi.vercel.app', 'https://reach-inbox-task-sable.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            config.clientUrl,
+            'https://reachinbox-chi.vercel.app',
+            'https://reach-inbox-task-sable.vercel.app',
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'https://reachi-9e87c38pc-govinds-projects-ef85b514.vercel.app'
+        ];
+
+        if (!origin || allowedOrigins.includes(origin) || /https:\/\/.*-govinds-projects-.*\.vercel\.app/.test(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`Blocked by CORS: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
