@@ -23,81 +23,54 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     isCredentialsLoading,
     isGoogleLoading,
     handleCredentialsLogin,
-    handleGoogleLogin,
-    toggleMode
+    handleGoogleLogin, // Unused here now, but kept in props interface
+    toggleMode // Unused here now
 }) => {
     return (
-        <>
-            <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900">
-                    {isRegistering ? 'Create an Account' : 'Login'}
-                </h1>
-                <p className="mt-2 text-sm text-gray-600">
-                    {isRegistering ? "Enter your details to get started" : "Welcome back! Please enter your details"}
-                </p>
-            </div>
-
-            <div className="mt-8 space-y-6">
-                {/* Google Login is handled in parent or here, but let's pass the handler */}
-                <slot name="social-login" /> {/* Simulating slot, but in React we just compose in parent usually, or pass component. Let's keep it simple and assume parent composes or we pass social button as child? Logic says strictly follow plan. Plan said "Atomize Components". */}
-
-                {/* We will render SocialButton in parent to clean this up, or here. Let's keep this focused on the Inputs to be cleaner. */}
-                {/* Actually, let's keep the structure close to original for CSS reasons but break it down. */}
-
-                <div className="space-y-4">
-                    {isRegistering && (
-                        <div>
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="input-field"
-                            />
-                        </div>
-                    )}
+        <div className="space-y-6">
+            <div className="space-y-4">
+                {isRegistering && (
                     <div>
+                        <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Name</div>
                         <input
-                            type="email"
-                            placeholder="Email ID"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            placeholder="Ex. John Doe"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             className="input-field"
                         />
                     </div>
-                    <div>
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="input-field"
-                        />
-                    </div>
+                )}
+                <div>
+                    <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Email</div>
+                    <input
+                        type="email"
+                        placeholder="Ex. john@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="input-field"
+                    />
                 </div>
-
-                <button
-                    onClick={handleCredentialsLogin}
-                    disabled={isGoogleLoading || isCredentialsLoading}
-                    className={`btn-primary ${isCredentialsLoading ? 'opacity-70' : ''}`}
-                >
-                    {isCredentialsLoading && <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
-                    {isRegistering ? 'Register' : 'Login'}
-                </button>
+                <div>
+                    <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Password</div>
+                    <input
+                        type="password"
+                        placeholder="********"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="input-field"
+                    />
+                </div>
             </div>
 
-            <div className="text-center mt-6">
-                <p className="text-sm text-gray-600">
-                    {isRegistering ? "Already have an account?" : "Don't have an account?"} {' '}
-                    <button
-                        onClick={toggleMode}
-                        className="text-green-600 font-medium hover:underline focus:outline-none cursor-pointer"
-                        aria-label={isRegistering ? "Switch to Login" : "Switch to Register"}
-                    >
-                        {isRegistering ? 'Login' : 'Register'}
-                    </button>
-                </p>
-            </div>
-        </>
+            <button
+                onClick={handleCredentialsLogin}
+                disabled={isGoogleLoading || isCredentialsLoading}
+                className={`btn-primary w-full ${isCredentialsLoading ? 'opacity-70' : ''}`}
+            >
+                {isCredentialsLoading && <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2 inline-block align-middle"></div>}
+                {isRegistering ? 'Register' : 'Login'}
+            </button>
+        </div>
     );
 };
