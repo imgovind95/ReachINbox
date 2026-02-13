@@ -9,7 +9,7 @@ interface EmailItem {
     sender?: string; // Added sender support
     subject: string;
     body: string;
-    status: 'scheduled' | 'sent' | 'inbox'; // Added inbox status
+    status: 'scheduled' | 'sent' | 'inbox' | 'failed'; // Added inbox status
     date: string;
     previewUrl?: string; // Ethereal Preview
 }
@@ -29,9 +29,9 @@ export default function EmailList({ title, items, isLoading, onRefresh }: EmailL
             <div className="px-8 py-6 flex items-center gap-4 border-b border-gray-100">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
-                        type="text" 
-                        placeholder="Search" 
+                    <input
+                        type="text"
+                        placeholder="Search"
                         className="w-full bg-gray-100 pl-10 pr-4 py-2.5 rounded-lg text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500/20"
                     />
                 </div>
@@ -43,7 +43,7 @@ export default function EmailList({ title, items, isLoading, onRefresh }: EmailL
                         </span>
                     )}
                 </button>
-                <button 
+                <button
                     onClick={onRefresh}
                     disabled={isLoading}
                     className={`p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors ${isLoading ? 'animate-spin text-green-600' : ''}`}
@@ -76,7 +76,7 @@ export default function EmailList({ title, items, isLoading, onRefresh }: EmailL
 const EmailListItem = ({ item }: { item: EmailItem }) => {
     const router = useRouter();
     return (
-        <div 
+        <div
             onClick={() => router.push(`/dashboard/email/${item.id}`)}
             className="group px-8 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors flex items-start gap-4 cursor-pointer"
         >
@@ -85,13 +85,17 @@ const EmailListItem = ({ item }: { item: EmailItem }) => {
                     <span className="font-semibold text-gray-900 text-sm">
                         {item.sender ? `From: ${item.sender}` : `To: ${item.recipient}`}
                     </span>
-                    
+
                     {item.status === 'scheduled' ? (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-medium tracking-wide">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-medium tracking-wide">
                             <span className="w-2.5 h-2.5 rounded-full border border-current opacity-60 flex items-center justify-center">
                                 <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                             </span>
-                            {item.date} 
+                            {item.date}
+                        </span>
+                    ) : item.status === 'failed' ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100 text-[10px] font-medium tracking-wide">
+                            Failed
                         </span>
                     ) : (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium tracking-wide">
@@ -105,12 +109,12 @@ const EmailListItem = ({ item }: { item: EmailItem }) => {
                     <span className="truncate">{item.body}</span>
                 </div>
             </div>
-            
+
             <div className="flex flex-col items-end gap-2">
-                 {item.previewUrl && (
-                    <a 
-                        href={item.previewUrl} 
-                        target="_blank" 
+                {item.previewUrl && (
+                    <a
+                        href={item.previewUrl}
+                        target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
                         className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors whitespace-nowrap"

@@ -41,7 +41,7 @@ export default function Sidebar() {
             }).length;
 
             const sent = data.filter((job: any) => {
-              if (job.status === 'COMPLETED') return true;
+              if (job.status === 'COMPLETED' || job.status === 'FAILED') return true;
               if (job.status === 'PENDING' || job.status === 'DELAYED') {
                 return new Date(job.scheduledAt) <= now;
               }
