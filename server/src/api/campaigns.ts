@@ -86,17 +86,7 @@ campaignRouter.post('/', async (req: Request<{}, {}, ScheduleEmailRequest>, res:
     }
 });
 
-// Retrieve User Campaigns
-campaignRouter.get('/:userId', async (req, res) => {
-    const { userId } = req.params;
-    const userCampaigns = await prisma.emailJob.findMany({
-        where: { userId },
-        orderBy: { scheduledAt: 'desc' }
-    });
-    res.json(userCampaigns);
-});
-
-// Simulated Inbox (For Testing)
+// Simulated Inbox (For Testing) - MOVED UP
 campaignRouter.get('/inbox/:emailAddress', async (req, res) => {
     const { emailAddress } = req.params;
     if (!emailAddress) return res.status(400).json({ error: "Email address required" });
@@ -127,7 +117,7 @@ campaignRouter.get('/inbox/:emailAddress', async (req, res) => {
     }
 });
 
-// Get Campaign Details
+// Get Campaign Details - MOVED UP
 campaignRouter.get('/job/:jobId', async (req, res) => {
     const { jobId } = req.params;
     try {
@@ -144,6 +134,33 @@ campaignRouter.get('/job/:jobId', async (req, res) => {
     } catch (err) {
         console.error("Campaign Details Error:", err);
         res.status(500).json({ error: "Could not fetch campaign details" });
+    }
+});
+
+// Retrieve User Campaigns (Generic Parameter Route - MOVED DOWN)
+campaignRouter.get('/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    try {
+        // Validation: Verify if user exists first (Optional but good for debugging)
+        // const userExists = await prisma.user.findUnique({ where: { id: userId } });
+        // if (!userExists) return res.status(404).json({ error: "User not found" });
+
+        const userCampaigns = await prisma.emailJob.findMany({
+            where: { userId },
+            orderBy: { scheduledAt: 'desc' }
+        });
+        res.json(userCampaigns);
+    } catch (err: any) {
+        console.error("Fetch Campaigns Error:", err);
+        res.status(500).json({
+            error: "Failed to fetch campaigns",
+            details: err instanceof Error ? err.message : String(err)
+        });
     }
 });
 
