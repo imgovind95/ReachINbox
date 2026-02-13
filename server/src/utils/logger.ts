@@ -1,29 +1,16 @@
-
-/**
- * Custom Logger to standardize output formats and replace direct console calls
- */
-class Logger {
-    public info(message: string, meta?: any): void {
-        const timestamp = new Date().toISOString();
-        console.log(`[INFO] ${timestamp}: ${message}`, meta ? meta : '');
-    }
-
-    public error(message: string, error?: any): void {
-        const timestamp = new Date().toISOString();
-        console.error(`[ERROR] ${timestamp}: ${message}`, error ? error : '');
-    }
-
-    public warn(message: string, meta?: any): void {
-        const timestamp = new Date().toISOString();
-        console.warn(`[WARN] ${timestamp}: ${message}`, meta ? meta : '');
-    }
-
-    public debug(message: string, meta?: any): void {
+export const logger = {
+    info: (message: string, meta?: any) => {
+        console.log(`[INFO] ${new Date().toISOString()}: ${message}`, meta ? JSON.stringify(meta) : '');
+    },
+    error: (message: string, error?: any) => {
+        console.error(`[ERROR] ${new Date().toISOString()}: ${message}`, error);
+    },
+    warn: (message: string, meta?: any) => {
+        console.warn(`[WARN] ${new Date().toISOString()}: ${message}`, meta ? JSON.stringify(meta) : '');
+    },
+    debug: (message: string, meta?: any) => {
         if (process.env.NODE_ENV !== 'production') {
-            const timestamp = new Date().toISOString();
-            console.debug(`[DEBUG] ${timestamp}: ${message}`, meta ? meta : '');
+            console.debug(`[DEBUG] ${new Date().toISOString()}: ${message}`, meta ? JSON.stringify(meta) : '');
         }
     }
-}
-
-export const logger = new Logger();
+};

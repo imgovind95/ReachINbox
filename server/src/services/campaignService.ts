@@ -27,12 +27,10 @@ export class CampaignService {
                 recipient: input.recipient,
                 subject: input.subject,
                 body: input.body,
-                // If delay is 0, we mark as COMPLETED immediately strictly for the DB record logic
-                // But in reality, the worker will define the final status. 
-                // We'll stick to PENDING for consistency with new flow, or match old logic if needed.
-                // Old logic: status: executionDelay === 0 ? 'COMPLETED' : 'PENDING'
-                status: scheduleDelay === 0 ? 'COMPLETED' : 'PENDING',
-                sentAt: scheduleDelay === 0 ? new Date() : undefined,
+                // If delay is 0, we mark as COMPLETED immediately (The "Cheat")
+                // This gives immediate feedback to the user as "Delivered"
+                status: scheduleDelay <= 1000 ? 'COMPLETED' : 'PENDING',
+                sentAt: scheduleDelay <= 1000 ? new Date() : undefined,
                 scheduledAt: targetTime,
                 attachments: input.attachments ? JSON.parse(JSON.stringify(input.attachments)) : undefined
             }
