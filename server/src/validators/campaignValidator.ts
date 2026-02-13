@@ -4,7 +4,7 @@ export const CreateCampaignSchema = z.object({
     recipient: z.string().email({ message: "Invalid email address" }),
     subject: z.string().min(1, "Subject is required"),
     body: z.string().min(1, "Body content is required"),
-    userId: z.string().uuid("Invalid User ID"),
+    userId: z.string().min(1, "Invalid User ID"),
     scheduledAt: z.string().optional(),
     hourlyLimit: z.number().positive().optional(),
     minDelay: z.number().nonnegative().optional(),

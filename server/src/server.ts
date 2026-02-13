@@ -44,6 +44,10 @@ apiServer.get('/health', (req, res) => {
     res.json({ status: 'active', redisState: redisConnection.status });
 });
 
+// Error Handling Middleware
+import { errorMiddleware } from './middlewares/errorMiddleware';
+apiServer.use(errorMiddleware as any);
+
 apiServer.listen(config.port, () => {
     console.log(`API Server initialized on port ${config.port}`);
     console.log(`Database connected: ${process.env.DATABASE_URL}`);
