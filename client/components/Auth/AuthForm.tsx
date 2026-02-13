@@ -31,10 +31,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             <div className="space-y-4">
                 {isRegistering && (
                     <div>
-                        <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Name</div>
                         <input
                             type="text"
-                            placeholder="Ex. John Doe"
+                            placeholder="Name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="input-field"
@@ -42,20 +41,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                     </div>
                 )}
                 <div>
-                    <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Email</div>
                     <input
                         type="email"
-                        placeholder="Ex. john@example.com"
+                        placeholder="Email ID"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="input-field"
                     />
                 </div>
                 <div>
-                    <div className="text-sm font-medium text-gray-700 mb-1.5 ml-1">Password</div>
                     <input
                         type="password"
-                        placeholder="********"
+                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="input-field"
