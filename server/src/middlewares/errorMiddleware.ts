@@ -31,6 +31,14 @@ export const errorMiddleware = (err: any, req: Request, res: Response, next: Nex
         });
     }
 
+    // JSON Parse Error (SyntaxError)
+    if (err instanceof SyntaxError && 'body' in err) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Invalid JSON payload'
+        });
+    }
+
     // Generic Error
     res.status(err.statusCode).json({
         status: 'error',

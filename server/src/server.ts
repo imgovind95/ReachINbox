@@ -7,6 +7,7 @@ import { redisConnection } from './config/redis';
 import campaignRouter from './api/campaigns';
 import authEndpoints from './api/authentication';
 import './jobs/EmailProcessor'; // Initialize Background Processor
+import { errorMiddleware } from './middlewares/errorMiddleware';
 
 const apiServer = express();
 
@@ -45,7 +46,6 @@ apiServer.get('/health', (req, res) => {
 });
 
 // Error Handling Middleware
-import { errorMiddleware } from './middlewares/errorMiddleware';
 apiServer.use(errorMiddleware as any);
 
 apiServer.listen(config.port, () => {
