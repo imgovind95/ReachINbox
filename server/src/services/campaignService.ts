@@ -87,7 +87,9 @@ export class CampaignService {
     }
 
     public async getInboxMessages(email: string) {
-        return prisma.emailJob.findMany({
+        logger.info(`Fetching inbox for: ${email}`);
+
+        const messages = await prisma.emailJob.findMany({
             where: {
                 recipient: { equals: email, mode: 'insensitive' },
                 OR: [
@@ -105,6 +107,9 @@ export class CampaignService {
             },
             orderBy: { sentAt: 'desc' }
         });
+
+        logger.info(`Found ${messages.length} messages for ${email}`);
+        return messages;
     }
 }
 
