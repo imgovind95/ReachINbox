@@ -1,6 +1,6 @@
 <div align="center">
 
-#  ReachInbox Assignment
+# ReachInbox Assignment
 ### The Ultimate Full-Stack Email Scheduling Platform
 
 **TypeScript** • **Next.js 14** • **Node.js 20** • **Redis (BullMQ)** • **PostgreSQL (Prisma)**
@@ -8,6 +8,7 @@
 <p align="center">
   <a href="#-key-features">Key Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-architecture">Architecture</a> •
   <a href="#-getting-started">Getting Started</a> •
   <a href="#-deployment">Deployment</a>
 </p>
@@ -22,12 +23,14 @@
 
 Unlike standard implementations, this project features a **custom Split-Screen Design**, a unique **Dual-Authentication flow** (Google OAuth + Custom Registration), and a robust **Distributed Queue System** that ensures 100% reliable delivery even during server restarts.
 
+**Recent Major Refactor (Feb 2026):** The backend has been completely re-architected to use a scalable **Service-Controller Pattern**, decoupling business logic from API routes and ensuring high code quality.
+
 ---
 
 ## ✨ Key Features
 
 ### 🔐 Advanced Authentication
-- **Dual Auth System**: Seamlessly combine Google OAuth with a custom registration step to capture user details (like Name) that OAuth might miss.
+- **Dual Auth System**: Seamlessly combine Google OAuth with a custom registration step to capture user details.
 - **Secure Session Management**: Powered by `NextAuth.js`.
 
 ### 🎨 Modern UI/UX
@@ -37,9 +40,22 @@ Unlike standard implementations, this project features a **custom Split-Screen D
 
 ### ⚙️ Powerful Backend
 - **Precision Scheduling**: Uses **BullMQ** and **Redis** to handle delayed jobs with millisecond precision.
-- **Fault Tolerance**: If the server crashes, persistent Redis queues ensure no scheduled email is ever lost.
-- **Rate Limiting**: Implements a "Token Bucket" style limiter to respect SMTP provider quotas (e.g., Gmail's limits).
-- **Concurrency**: Process multiple email jobs simultaneously with optimized worker threads.
+- **Fault Tolerance**: Persistent Redis queues ensure no scheduled email is ever lost.
+- **Instant Feedback**: Optimized status updates provide immediate "Delivered" feedback for instant emails.
+- **Rate Limiting**: Implements a "Token Bucket" style limiter to respect SMTP provider quotas.
+- **Concurrency**: Process multiple email jobs simultaneously with optimized Class-based Workers.
+
+---
+
+## 🏗 Architecture
+
+The backend follows a strict **Separation of Concerns** principle:
+
+- **Controllers (`/controllers`)**: Handle HTTP requests, validation, and responses.
+- **Services (`/services`)**: Contain business logic and database interactions.
+- **Jobs (`/jobs`)**: Background workers (e.g., `EmailProcessor`) for async tasks.
+- **Validators (`/validators`)**: Zod schemas for robust input validation.
+- **Utils (`/utils`)**: Centralized logging and error handling.
 
 ---
 
@@ -61,12 +77,12 @@ Follow these steps to run the project locally.
 
 ### Prerequisites
 - **Node.js** (v18+)
-- **Docker** (for Redis/Postgres) OR local instances.
+- **Redis** & **PostgreSQL** (Local or Cloud)
 
 ### 1. Clone & Setup
 ```bash
-git clone https://github.com/imgovind95/ReachInbox-Task-main.git
-cd ReachInbox-Task-main
+git clone https://github.com/imgovind95/ReachINbox.git
+cd ReachINbox
 ```
 
 ### 2. Backend Setup
@@ -75,53 +91,23 @@ cd server
 npm install
 # Copy example env
 cp .env.example .env
-# Start DB (if using Docker)
-docker-compose up -d
-# Push Schema
+# Push Schema to DB
 npx prisma db push
-# Run Dev Server
-npm run dev
+# Build Project
+npm run build
+# Start Server (API + Worker)
+npm start
 ```
-> Server runs on `http://localhost:3000`
+> Server runs on `http://localhost:10000` or port defined in `.env`
 
 ### 3. Frontend Setup
 ```bash
 cd client
 npm install
-# Configure .env.local (see below)
+# Configure .env.local
 npm run dev
 ```
-> Client runs on `http://localhost:3001`
-
----
-
-## 🔒 Environment Variables
-
-<details>
-<summary>Click to view <code>server/.env</code></summary>
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/reachinbox"
-REDIS_HOST="localhost"
-REDIS_PORT="6379"
-GOOGLE_CLIENT_ID="your_google_id"
-GOOGLE_CLIENT_SECRET="your_google_secret"
-JWT_SECRET="your_jwt_secret"
-CLIENT_URL="http://localhost:3001"
-```
-</details>
-
-<details>
-<summary>Click to view <code>client/.env.local</code></summary>
-
-```env
-GOOGLE_CLIENT_ID="your_google_id"
-GOOGLE_CLIENT_SECRET="your_google_secret"
-NEXTAUTH_URL="http://localhost:3001"
-NEXT_PUBLIC_API_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your_nextauth_secret"
-```
-</details>
+> Client runs on `http://localhost:3000`
 
 ---
 
@@ -144,7 +130,7 @@ The system is designed for easy deployment on **Render** (Backend) and **Vercel*
 
 ## 👤 Author
 
-**User**
+**Govind Kumar**
 - Github: [@imgovind95](https://github.com/imgovind95)
 
 ---
