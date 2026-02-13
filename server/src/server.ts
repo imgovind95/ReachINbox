@@ -50,5 +50,6 @@ apiServer.use(errorMiddleware as any);
 
 apiServer.listen(config.port, () => {
     console.log(`API Server initialized on port ${config.port}`);
+    console.log(`Server Version: v1.1.0 - JSON Fixes & Debugging (${new Date().toISOString()})`);
     console.log(`Database connected: ${process.env.DATABASE_URL}`);
 });
