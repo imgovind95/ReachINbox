@@ -1,20 +1,17 @@
+const { PrismaClient } = require('@prisma/client');
 
-const { Client } = require('pg');
-
-const client = new Client({
-    connectionString: "postgresql://postgres:postgres@127.0.0.1:5432/reachinbox",
-});
-
-async function testConnection() {
+async function verifyDatabaseParams() {
+    const client = new PrismaClient();
     try {
-        await client.connect();
-        console.log("Connected successfully to PostgreSQL!");
-        const res = await client.query('SELECT NOW()');
-        console.log(res.rows[0]);
-        await client.end();
-    } catch (err) {
-        console.error("Connection failed:", err);
+        console.log("Verifying database connection parameters...");
+        await client.$connect();
+        console.log("Connection successful. Database is ready.");
+    } catch (e) {
+        console.error("Connection failed:", e);
+        process.exit(1);
+    } finally {
+        await client.$disconnect();
     }
 }
 
-testConnection();
+verifyDatabaseParams();

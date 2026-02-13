@@ -1,33 +1,34 @@
 export interface Attachment {
     filename: string;
-    content: string; // Base64
     encoding?: string;
+    content: string; // Base64
 }
 
-export interface EmailJobData {
+// Renamed and reordered
+export interface BackgroundJobData {
+    emailJobId: string; // DB ID
+    userId: string;
     recipient: string;
     subject: string;
     body: string;
-    userId: string;
-    emailJobId: string; // DB ID
-    hourlyLimit?: number;
-    minDelay?: number;
     attachments?: Attachment[];
+    minDelay?: number;
+    hourlyLimit?: number;
 }
 
 export interface ScheduleEmailRequest {
+    userId: string;
     recipient: string;
     subject: string;
     body: string;
-    userId: string;
     scheduledAt?: string;
+    attachments?: Attachment[];
     hourlyLimit?: number;
     minDelay?: number;
-    attachments?: Attachment[];
 }
 
 export interface ScheduleEmailResponse {
     success: boolean;
-    jobId: string;
     message: string;
+    jobId: string;
 }

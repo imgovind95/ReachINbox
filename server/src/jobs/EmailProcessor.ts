@@ -1,6 +1,6 @@
 
 import { Worker, Job } from 'bullmq';
-import { prisma } from '../config/db';
+import { db } from '../config/db';
 import { createRedisConnection } from '../config/redis';
 import { config } from '../config/env';
 import { logger } from '../utils/logger';
@@ -58,14 +58,14 @@ class EmailProcessor {
             const { subject, body } = this.personalizeContent(title, content, toAddress);
 
             // 3. Dispatch Email
-            const sender = await prisma.user.findUnique({ where: { id: ownerId } });
+            const sender = await db.user.findUnique({ where: { id: ownerId } });
             const fromName = sender?.name || "ReachInbox User";
             const fromEmail = sender?.email || "noreply@reachinbox.com";
 
             const result = await dispatchEmail(toAddress, subject, body, files, fromName, fromEmail);
 
             // 4. Update Status
-            await prisma.emailJob.update({
+            await db.emailJob.update({
                 where: { id: campaignId },
                 data: {
                     status: 'COMPLETED',
@@ -83,7 +83,7 @@ class EmailProcessor {
 
         } catch (error) {
             logger.error(`Failed to process job ${job.id}`, error);
-            await prisma.emailJob.update({
+            await db.emailJob.update({
                 where: { id: campaignId },
                 data: { status: 'FAILED' }
             });

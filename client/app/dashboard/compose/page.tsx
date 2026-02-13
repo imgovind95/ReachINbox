@@ -1,231 +1,49 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import Papa from 'papaparse';
 import {
-    ArrowLeft, Paperclip, Clock, ChevronDown, Upload,
-    Undo, Redo, Type, Bold, Italic, Underline,
-    AlignLeft, AlignCenter, AlignRight,
-    List, ListOrdered, Quote, FileText, Link,
-    Calendar as CalendarIcon, X
+    ArrowLeft, Paperclip, Upload,
+    Undo, Redo, Type, Bold, Italic,
+    FileText, X
 } from 'lucide-react';
+import { useCompose } from '@/hooks/useCompose';
 
 export default function ComposePage() {
     const router = useRouter();
-    const { data: session } = useSession();
 
-    // Form State
-    // Form State
-    const [recipients, setRecipients] = useState<string[]>([]);
-    const [inputValue, setInputValue] = useState('');
-    const [subject, setSubject] = useState('');
-    const [body, setBody] = useState('');
-    const [minDelay, setMinDelay] = useState('');
-    const [hourlyLimit, setHourlyLimit] = useState('');
-    const [attachments, setAttachments] = useState<{ filename: string, content: string, encoding: string }[]>([]);
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const attachmentInputRef = useRef<HTMLInputElement>(null);
-
-    // Scheduling State
-    const [showSchedule, setShowSchedule] = useState(false);
-    const [scheduledDate, setScheduledDate] = useState<string>('');
-    const [isSending, setIsSending] = useState(false);
-
-    // Parsers (for Bulk CSV upload - kept below as requested to fix "above changes" usually means restore previous valid state + new feature, 
-    // but User explicitly said "no don't add csv button make a normal pdf, photo...". 
-    // So I will KEEP the recipient upload logic (as it was asked for in previous step 997) BUT remove the *header* CSV button I just added.
-    // And ADD the Attachment logic.
-
-    const parseEmails = (content: string): string[] => {
-        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-        const matches = content.match(emailRegex);
-        return matches ? Array.from(new Set(matches)) : [];
-    };
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            Papa.parse(file, {
-                complete: (results) => {
-                    const extracted: string[] = [];
-                    results.data.forEach((row: any) => {
-                        // Assume single column or check all columns
-                        const rowValues = Object.values(row).join(' ');
-                        const found = parseEmails(rowValues);
-                        extracted.push(...found);
-                    });
-
-                    if (extracted.length > 0) {
-                        setRecipients(prev => Array.from(new Set([...prev, ...extracted])));
-                        alert(`Loaded ${extracted.length} emails from file`);
-                    } else {
-                        alert("No valid emails found in file");
-                    }
-                },
-                header: false, // simpler for just grabbing emails from anywhere
-                skipEmptyLines: true,
-                error: (err) => {
-                    console.error("CSV Parse Error:", err);
-                    alert("Failed to parse CSV file");
-                }
-            });
-        }
-    };
-
-    const handleAttachmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const result = event.target?.result as string;
-                    // Extract Base64 content
-                    const content = result.split(',')[1];
-                    setAttachments(prev => [...prev, {
-                        filename: file.name,
-                        content: content,
-                        encoding: 'base64'
-                    }]);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-    };
-
-    const removeAttachment = (index: number) => {
-        setAttachments(prev => prev.filter((_, i) => i !== index));
-    };
-
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (['Enter', ',', ' '].includes(e.key)) {
-            e.preventDefault();
-            const value = inputValue.trim().replace(/,$/, '');
-            if (value) {
-                const found = parseEmails(value);
-                if (found.length > 0) {
-                    setRecipients(prev => Array.from(new Set([...prev, ...found])));
-                    setInputValue('');
-                }
-            }
-        } else if (e.key === 'Backspace' && !inputValue && recipients.length > 0) {
-            setRecipients(prev => prev.slice(0, -1));
-        }
-    };
-
-    const removeRecipient = (email: string) => {
-        setRecipients(prev => prev.filter(r => r !== email));
-    };
-
-
-    // Prefetch for speed
-    useEffect(() => {
-        router.prefetch('/dashboard/sent');
-        router.prefetch('/dashboard/scheduled');
-    }, [router]);
-
-    // Submit Handler
-    // Submit Handler
-    const handleSend = async (type: 'now' | 'later' = 'now') => {
-        if (isSending) return;
-
-        if (!session?.user || !(session.user as any).id) {
-            alert("Please log in first");
-            return;
-        }
-
-        if (type === 'later' && !scheduledDate) {
-            alert("Please select a date and time for scheduling.");
-            return;
-        }
-
-        let targets = [...recipients];
-
-        // Check if there's a valid email in input that hasn't been added yet
-        if (inputValue.trim()) {
-            const pendingEmails = parseEmails(inputValue);
-            if (pendingEmails.length > 0) {
-                targets = Array.from(new Set([...targets, ...pendingEmails]));
-                setRecipients(targets);
-                setInputValue('');
-            } else {
-                // Input exists but regex didn't match anything
-                alert("The email address in the 'To' field is invalid. Please check the format.");
-                return;
-            }
-        }
-
-        if (targets.length === 0) {
-            alert("Please add at least one recipient");
-            return;
-        }
-
-        setIsSending(true);
-
-        const payloadBase = {
-            userId: (session.user as any).id,
-            subject,
-            body,
-            hourlyLimit: hourlyLimit ? parseInt(hourlyLimit) : undefined,
-            minDelay: minDelay ? parseInt(minDelay) : undefined,
-            attachments: attachments.length > 0 ? attachments : undefined
-        };
-
-        // Fire and Forget - "Instant Switch"
-        // We yield to the main thread first to ensure the UI updates (button disabled/spinner)
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        // We do NOT await this. We let it run in the background.
-        Promise.all(targets.map(async (email) => {
-            const controller = new AbortController();
-            // Longer timeout for background process since we don't block UI
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedule`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ...payloadBase,
-                        recipient: email,
-                        scheduledAt: type === 'later' && scheduledDate ? new Date(scheduledDate).toISOString() : undefined
-                    }),
-                    signal: controller.signal,
-                    keepalive: true // Critical: Ensure request survives page navigation
-                });
-                clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                    console.error(`Failed to send to ${email}:`, await res.text());
-                }
-            } catch (err) {
-                console.error(`Fetch error for ${email}:`, err);
-            }
-        }));
-
-        // Start background cleanup (clearing inputs) - we don't need to wait for this to update UI
-        // But since we are navigating away, we mainly care about resetting if the user comes back? 
-        // Actually, if we navigate away, state is lost. So no need to reset strictly.
-        // But we might want to trigger the sidebar refresh locally if possible?
-        window.dispatchEvent(new Event('refresh-sidebar'));
-
-        // INSTANT NAVIGATION
-        if (type === 'now') {
-            router.push('/dashboard/sent');
-        } else {
-            router.push('/dashboard/scheduled');
-        }
-    };
-
-    // ... [Rest of JSX for Layout, Toolbar, Inputs matches previous design]
-    // ... [Binding value={subject} onChange={e => setSubject(e.target.value)} etc.]
+    // Destructure all needed state and handlers from the custom hook
+    const {
+        recipients,
+        inputValue,
+        setInputValue,
+        subject,
+        setSubject,
+        body,
+        setBody,
+        minDelay,
+        setMinDelay,
+        hourlyLimit,
+        setHourlyLimit,
+        attachments,
+        fileInputRef,
+        attachmentInputRef,
+        showSchedule,
+        setShowSchedule,
+        scheduledDate,
+        setScheduledDate,
+        isSending,
+        handleFileUpload,
+        handleAttachmentUpload,
+        removeAttachment,
+        handleKeyDown,
+        removeRecipient,
+        handleSend,
+        session
+    } = useCompose();
 
     return (
         <div className="min-h-screen bg-white flex flex-col relative text-gray-900">
-            {/* ... Headers ... */}
+            {/* Header */}
             <div className="flex items-center justify-between px-8 py-4 border-b border-gray-100">
                 <div className="flex items-center gap-4">
                     <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-900">
@@ -235,7 +53,6 @@ export default function ComposePage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {/* ... Icons ... */}
                     <input
                         type="file"
                         multiple
@@ -370,12 +187,10 @@ export default function ComposePage() {
                     )}
                 </div>
 
-                {/* Editor (Simplified for brevity, same styled toolbar) */}
+                {/* Editor */}
                 <div className="bg-gray-50 rounded-lg min-h-[400px] flex flex-col">
-                    {/* ... Toolbar code ... */}
                     <div className="flex flex-wrap items-center gap-1 p-2 border-b border-gray-200 bg-white rounded-t-lg">
                         {[Undo, Redo, Type, Bold, Italic].map((I, i) => <button key={i} className="p-1.5 text-gray-500"><I size={18} /></button>)}
-                        {/* ... more icons ... */}
                     </div>
                     <textarea
                         value={body}
@@ -390,12 +205,11 @@ export default function ComposePage() {
             {/* Modal - Overlay */}
             <div
                 className={`fixed inset-0 z-10 bg-black/20 backdrop-blur-sm transition-opacity duration-200 ${showSchedule ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}
-                onClick={() => setShowSchedule(false)} // Close on background click
+                onClick={() => setShowSchedule(false)}
             ></div>
 
             {/* Modal - Content */}
             <div className={`absolute top-16 right-8 z-20 w-[400px] bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden transform transition-all duration-200 origin-top-right ${showSchedule ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                {/* ... Modal Content matches design ... */}
                 <div className="p-6">
                     <h3 className="font-semibold mb-4">Send Later</h3>
                     <input

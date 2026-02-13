@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+// Load environment variables
 dotenv.config();
 
-const envSchema = z.object({
+const environmentSchema = z.object({
     PORT: z.string().default('3000'),
     DATABASE_URL: z.string(),
     REDIS_HOST: z.string().default('localhost'),
@@ -16,30 +17,30 @@ const envSchema = z.object({
     MAX_EMAILS_PER_HOUR: z.string().default('10'),
 });
 
-const _env = envSchema.safeParse(process.env);
+const parsedEnv = environmentSchema.safeParse(process.env);
 
-if (!_env.success) {
-    console.error("❌ Invalid environment variables:", _env.error.format());
+if (!parsedEnv.success) {
+    console.error("❌ Critical: Invalid environment variables:", parsedEnv.error.format());
     process.exit(1);
 }
 
-const env = _env.data;
+const envCols = parsedEnv.data;
 
 export const config = {
-    port: parseInt(env.PORT, 10),
-    databaseUrl: env.DATABASE_URL,
-    redisUrl: process.env.REDIS_URL, // Optional, typically provided by Render
+    port: parseInt(envCols.PORT, 10),
+    databaseUrl: envCols.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
     redis: {
-        host: env.REDIS_HOST,
-        port: parseInt(env.REDIS_PORT, 10),
+        host: envCols.REDIS_HOST,
+        port: parseInt(envCols.REDIS_PORT, 10),
     },
     google: {
-        clientId: env.GOOGLE_CLIENT_ID,
-        clientSecret: env.GOOGLE_CLIENT_SECRET,
-        callbackUrl: process.env.GOOGLE_CALLBACK_URL || `http://localhost:${env.PORT}/api/auth/google/callback`
+        clientId: envCols.GOOGLE_CLIENT_ID,
+        clientSecret: envCols.GOOGLE_CLIENT_SECRET,
+        callbackUrl: process.env.GOOGLE_CALLBACK_URL || `http://localhost:${envCols.PORT}/api/auth/google/callback`
     },
-    clientUrl: env.CLIENT_URL,
-    jwtSecret: env.JWT_SECRET,
-    workerConcurrency: parseInt(env.WORKER_CONCURRENCY, 10),
-    maxEmailsPerHour: parseInt(env.MAX_EMAILS_PER_HOUR, 10)
+    clientUrl: envCols.CLIENT_URL,
+    jwtSecret: envCols.JWT_SECRET,
+    workerConcurrency: parseInt(envCols.WORKER_CONCURRENCY, 10),
+    maxEmailsPerHour: parseInt(envCols.MAX_EMAILS_PER_HOUR, 10)
 };

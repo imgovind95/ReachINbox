@@ -1,4 +1,4 @@
-import { prisma } from './config/db';
+import { db } from './config/db';
 import { redisConnection } from './config/redis';
 
 async function test() {
@@ -16,7 +16,7 @@ async function test() {
     // 2. Test User Upsert (Auth)
     try {
         console.log("Checking Prisma User Upsert...");
-        const user = await prisma.user.upsert({
+        const user = await db.user.upsert({
             where: { email: 'test_sys_check@example.com' },
             create: {
                 email: 'test_sys_check@example.com',
@@ -33,7 +33,7 @@ async function test() {
     // 3. Test EmailJob Query (Inbox)
     try {
         console.log("Checking Prisma EmailJob Query...");
-        const jobs = await prisma.emailJob.findMany({
+        const jobs = await db.emailJob.findMany({
             take: 1
         });
         console.log("✅ EmailJob Query Success, found:", jobs.length);

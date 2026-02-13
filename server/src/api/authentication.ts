@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '../config/db';
+import { db } from '../config/db';
 
 const authRouter = Router();
 
@@ -15,7 +15,7 @@ authRouter.post('/google', async (req, res) => {
         if (name) userPayload.name = name;
         if (avatar) userPayload.avatar = avatar;
 
-        const authenticatedUser = await prisma.user.upsert({
+        const authenticatedUser = await db.user.upsert({
             where: { email },
             update: userPayload,
             create: {
@@ -42,7 +42,7 @@ authRouter.get('/user/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
             where: { id }
         });
         if (!user) {
@@ -63,7 +63,7 @@ authRouter.post('/unlink', async (req, res) => {
     }
 
     try {
-        const updatedUser = await prisma.user.update({
+        const updatedUser = await db.user.update({
             where: { id: userId },
             data: {
                 googleId: null,

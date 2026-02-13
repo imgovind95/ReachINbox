@@ -1,9 +1,21 @@
-@import "tailwindcss";
+/**
+ * Global Stylesheet
+ * Integrates TailwindCSS layers and custom utility overrides.
+ */
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Reset and Base Styles
+  Setting up root variables and body defaults.
+*/
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --base-font-smoothing: antialiased;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +31,16 @@ body {
   background: linear-gradient(to bottom,
       transparent,
       rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+
+  /* Font smoothing for better readability */
+  -webkit-font-smoothing: var(--base-font-smoothing);
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
 
 /* Stealth Refactoring: Custom Component Classes */
@@ -26,7 +48,7 @@ body {
   .btn-primary {
     @apply w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-md transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer;
   }
-  
+
   .btn-social {
     @apply w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-medium py-3 px-4 rounded-md flex items-center justify-center gap-3 transition-colors cursor-pointer;
   }

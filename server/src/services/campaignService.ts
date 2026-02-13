@@ -1,5 +1,5 @@
 
-import { prisma } from '../config/db';
+import { db } from '../config/db';
 import { queueService } from './queueService';
 import { CampaignInput } from '../validators/campaignValidator';
 import { logger } from '../utils/logger';
@@ -21,7 +21,7 @@ export class CampaignService {
         }
 
         // 2. Persist Task to Database
-        const campaignTask = await prisma.emailJob.create({
+        const campaignTask = await db.emailJob.create({
             data: {
                 userId: input.userId,
                 recipient: input.recipient,
@@ -52,7 +52,7 @@ export class CampaignService {
             }, scheduleDelay);
 
             // 4. Link Queue Job ID
-            await prisma.emailJob.update({
+            await db.emailJob.update({
                 where: { id: campaignTask.id },
                 data: { jobId: jobId }
             });
@@ -70,14 +70,14 @@ export class CampaignService {
     }
 
     public async getUserCampaigns(userId: string) {
-        return prisma.emailJob.findMany({
+        return db.emailJob.findMany({
             where: { userId },
             orderBy: { scheduledAt: 'desc' }
         });
     }
 
     public async getCampaignDetails(taskId: string) {
-        const task = await prisma.emailJob.findUnique({
+        const task = await db.emailJob.findUnique({
             where: { id: taskId },
             include: { user: { select: { name: true, email: true, avatar: true } } }
         });
@@ -89,7 +89,7 @@ export class CampaignService {
     public async getInboxMessages(email: string) {
         logger.info(`Fetching inbox for: ${email}`);
 
-        const messages = await prisma.emailJob.findMany({
+        const messages = await db.emailJob.findMany({
             where: {
                 recipient: { equals: email, mode: 'insensitive' },
                 OR: [
