@@ -9,6 +9,17 @@ export class CampaignController {
 
     public async schedule(req: Request, res: Response, next: NextFunction) {
         try {
+            logger.info("Schedule Request Received", {
+                headers: req.headers['content-type'],
+                bodyKeys: Object.keys(req.body),
+                body: req.body
+            });
+
+            // Check for empty body
+            if (!req.body || Object.keys(req.body).length === 0) {
+                throw new AppError("Request body is empty", 400);
+            }
+
             // Validation
             const validationResult = CreateCampaignSchema.safeParse(req.body);
 
