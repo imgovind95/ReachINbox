@@ -8,14 +8,14 @@ import { AppError } from '../utils/AppError';
 export class CampaignService {
 
     public async createCampaign(input: CampaignInput) {
-        logger.info("Initiating campaign creation", { user: input.ownerId });
+        logger.info("Initiating campaign creation", { user: input.userId });
 
         // 1. Calculate Schedule Delay
         let scheduleDelay = 0;
         let targetTime = new Date();
 
-        if (input.scheduleTime) {
-            targetTime = new Date(input.scheduleTime);
+        if (input.scheduledAt) {
+            targetTime = new Date(input.scheduledAt);
             const now = new Date();
             scheduleDelay = Math.max(0, targetTime.getTime() - now.getTime());
         }
@@ -23,10 +23,10 @@ export class CampaignService {
         // 2. Persist Task to Database
         const campaignTask = await prisma.emailJob.create({
             data: {
-                userId: input.ownerId,
-                recipient: input.toAddress,
-                subject: input.title,
-                body: input.content,
+                userId: input.userId,
+                recipient: input.recipient,
+                subject: input.subject,
+                body: input.body,
                 // If delay is 0, we mark as COMPLETED immediately strictly for the DB record logic
                 // But in reality, the worker will define the final status. 
                 // We'll stick to PENDING for consistency with new flow, or match old logic if needed.
@@ -34,7 +34,7 @@ export class CampaignService {
                 status: scheduleDelay === 0 ? 'COMPLETED' : 'PENDING',
                 sentAt: scheduleDelay === 0 ? new Date() : undefined,
                 scheduledAt: targetTime,
-                attachments: input.files ? JSON.parse(JSON.stringify(input.files)) : undefined
+                attachments: input.attachments ? JSON.parse(JSON.stringify(input.attachments)) : undefined
             }
         });
 
@@ -43,14 +43,14 @@ export class CampaignService {
         // 3. Dispatch to Queue
         try {
             const jobId = await queueService.scheduleEmail({
-                toAddress: input.toAddress,
-                title: input.title,
-                content: input.content,
-                ownerId: input.ownerId,
+                toAddress: input.recipient,
+                title: input.subject,
+                content: input.body,
+                ownerId: input.userId,
                 campaignId: campaignTask.id,
-                files: input.files,
-                maxPerHour: input.maxPerHour,
-                minInterval: input.minInterval
+                files: input.attachments ? input.attachments.map(a => ({ filename: a.filename, data: a.content, encoding: a.encoding })) : undefined,
+                maxPerHour: input.hourlyLimit,
+                minInterval: input.minDelay
             }, scheduleDelay);
 
             // 4. Link Queue Job ID
