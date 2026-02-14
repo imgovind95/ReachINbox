@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useParams } from 'next/navigation';
+import clsx from 'clsx';
 import {
     ArrowLeft,
     Trash2,
@@ -92,7 +93,26 @@ export default function EmailDetailPage() {
                     <h1 className="text-xl font-semibold text-gray-900 truncate max-w-2xl" title={email.subject}>
                         {email.subject}
                     </h1>
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-mono">{email.status}</span>
+                    {/* Status Badge Logic matching EmailListItem */}
+                    {email.status === 'scheduled' ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-medium tracking-wide">
+                            <span className="w-2.5 h-2.5 rounded-full border border-current opacity-60 flex items-center justify-center">
+                                <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                            </span>
+                            {new Date(email.scheduledAt).toLocaleDateString()}
+                        </span>
+                    ) : (
+                        <span className={clsx(
+                            "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide",
+                            {
+                                "bg-blue-50 text-blue-600": email.status === 'sending',
+                                "bg-gray-100 text-gray-600": email.status === 'inbox',
+                                "bg-green-100 text-green-700": email.status === 'sent' || email.status === 'failed'
+                            }
+                        )}>
+                            {email.status === 'inbox' ? 'Inbox' : 'Delivered'}
+                        </span>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3 text-gray-400">
