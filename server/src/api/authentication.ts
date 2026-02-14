@@ -12,7 +12,7 @@ authRouter.post('/google', async (req, res) => {
 
     try {
         const userPayload: any = { googleId };
-        if (name) userPayload.name = name;
+        if (name && name !== 'undefined') userPayload.name = name;
         if (avatar) userPayload.avatar = avatar;
 
         const authenticatedUser = await db.user.upsert({

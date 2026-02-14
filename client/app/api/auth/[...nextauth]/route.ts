@@ -30,7 +30,7 @@ const handler = NextAuth({
 
                     const payload = {
                         email: credentials.email,
-                        name: credentials.name,
+                        name: (credentials.name && credentials.name !== 'undefined') ? credentials.name : undefined,
                         avatar: '',
                         googleId: `dummy-${credentials.email}`,
                     };
@@ -89,7 +89,7 @@ const handler = NextAuth({
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             email: token.email,
-                            name: token.name,
+                            name: (token.name && token.name !== 'undefined') ? token.name : undefined,
                             avatar: token.picture,
                             googleId: account?.providerAccountId || `dummy-${token.email}`,
                         }),
@@ -99,7 +99,7 @@ const handler = NextAuth({
                         const data = await response.json();
                         if (data.user) {
                             if (data.user.id) token.backendId = data.user.id;
-                            if (data.user.name) token.name = data.user.name;
+                            if (data.user.name && data.user.name !== 'undefined') token.name = data.user.name;
                             if (data.user.avatar) token.picture = data.user.avatar;
                         }
                     } else {
