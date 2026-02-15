@@ -9,7 +9,7 @@ import { ReactNode } from 'react';
  */
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-white" id="dashboard-root">
+    <div className="flex h-screen bg-white overflow-hidden" id="dashboard-root">
       {/* Navigation Sidebar */}
       <Sidebar />
 

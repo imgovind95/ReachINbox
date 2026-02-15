@@ -90,7 +90,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="w-64 bg-gray-50 h-screen border-r border-gray-200 flex flex-col p-4 flex-shrink-0">
+    <div className="w-64 bg-gray-50 h-full border-r border-gray-200 flex flex-col p-4 flex-shrink-0">
       <div className="mb-8">
         <h1 className="text-2xl font-black tracking-tighter text-gray-900">ReachInbox</h1>
       </div>
