@@ -84,15 +84,15 @@ To prevent duplicate emails:
 
 ### Backend (`server/.env`)
 ```env
-DATABASE_URL="postgresql://user:pass@localhost:5432/reachinbox"
-REDIS_HOST="localhost"
-REDIS_PORT="6379"
+DATABASE_URL="postgresql://user:pass@localhost:5432/database_name"
+REDIS_HOST=""
+REDIS_PORT=""
 GOOGLE_CLIENT_ID="your_google_id"
 GOOGLE_CLIENT_SECRET="your_google_secret"
 JWT_SECRET="super_secure_secret"
-WORKER_CONCURRENCY=5
-MAX_EMAILS_PER_HOUR=50
-CLIENT_URL="http://localhost:3000"
+WORKER_CONCURRENCY=no.of workers
+MAX_EMAILS_PER_HOUR=No of email per worker
+CLIENT_URL=" "
 NODE_ENV="development"
 COOKIE_KEY="cookie_secret"
 ```
