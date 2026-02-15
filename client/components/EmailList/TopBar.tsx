@@ -5,12 +5,24 @@ interface TopBarProps {
     itemCount: number;
     isLoading: boolean;
     onRefresh?: () => void;
+    searchQuery: string;
+    onSearchChange: (query: string) => void;
+    suggestions: string[];
 }
 
-export const TopBar = ({ itemCount, isLoading, onRefresh }: TopBarProps) => {
+export const TopBar = ({ itemCount, isLoading, onRefresh, searchQuery, onSearchChange, suggestions }: TopBarProps) => {
+    const handleSuggestionClick = (value: string) => {
+        onSearchChange(value);
+    };
+
     return (
         <div className="px-8 py-6 flex items-center gap-4 border-b border-gray-100">
-            <SearchBar />
+            <SearchBar
+                value={searchQuery}
+                onChange={onSearchChange}
+                suggestions={suggestions}
+                onSuggestionClick={handleSuggestionClick}
+            />
             <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                 <Filter size={20} />
                 {itemCount >= 0 && (
