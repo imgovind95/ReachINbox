@@ -29,9 +29,8 @@ export const EmailListItem = ({ data }: EmailListItemProps) => {
         const statusClasses = clsx(
             "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide",
             {
-                "bg-blue-50 text-blue-600": data.status === 'sending' as any, // Only if type extended
                 "bg-gray-100 text-gray-600": data.status === 'inbox',
-                "bg-green-100 text-green-700": data.status === 'sent' || data.status === 'failed'
+                "bg-green-100 text-green-700": data.status === 'sent' || data.status === 'failed' || (data.status as any) === 'sending'
             }
         );
 
