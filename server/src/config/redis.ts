@@ -27,6 +27,7 @@ export const initializeRedis = () => {
 };
 
 export const redisConnection = initializeRedis();
+export const createRedisConnection = initializeRedis;
 
 redisConnection.on('error', (err) => {
     console.error('[Redis] Connection Error:', err);

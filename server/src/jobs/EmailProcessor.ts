@@ -104,7 +104,9 @@ class EmailProcessor {
 
         if (count && parseInt(count) >= limit) {
             const delay = 3600000; // 1 hour (simplified)
-            await job.moveToDelayed(Date.now() + delay, job.token);
+            if (job.token) {
+                await job.moveToDelayed(Date.now() + delay, job.token);
+            }
             throw new Error(`Rate limit exceeded. Rescheduled.`);
         }
     }

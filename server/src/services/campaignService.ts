@@ -93,7 +93,7 @@ export class CampaignService {
             where: {
                 recipient: { equals: email, mode: 'insensitive' },
                 OR: [
-                    { status: 'COMPLETED' },
+                    { status: { in: ['COMPLETED', 'FAILED'] } },
                     {
                         status: { in: ['PENDING', 'DELAYED'] },
                         scheduledAt: { lte: new Date() }
