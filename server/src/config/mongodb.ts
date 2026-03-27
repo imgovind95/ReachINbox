@@ -34,6 +34,15 @@ export async function connectMongoDB(): Promise<void> {
             serverSelectionTimeoutMS: 5000,
             heartbeatFrequencyMS: 10000,
         });
+
+        // Drop stale unique index on googleId if it exists (was removed from schema)
+        try {
+            const usersCollection = mongoose.connection.collection('users');
+            await usersCollection.dropIndex('googleId_1');
+            logger.info('[MongoDB] Dropped stale unique index on googleId');
+        } catch {
+            // Index doesn't exist — all good
+        }
     } catch (err) {
         retryCount++;
         if (retryCount <= MAX_RETRIES) {

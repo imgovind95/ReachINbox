@@ -7,7 +7,7 @@ const UserSchema = new Schema(
         email: { type: String, required: true, unique: true },
         name: { type: String, default: null },
         avatar: { type: String, default: null },
-        googleId: { type: String, default: null, unique: true, sparse: true },
+        googleId: { type: String, default: null },
     },
     {
         _id: false, // We manage _id ourselves (UUID)
