@@ -12,23 +12,18 @@ export const userRepo = {
         name?: string | null;
         avatar?: string | null;
     }) {
-        const updatePayload: any = {};
-        if (data.googleId !== undefined) updatePayload.googleId = data.googleId;
-        if (data.name && data.name !== 'undefined') updatePayload.name = data.name;
-        if (data.avatar !== undefined) updatePayload.avatar = data.avatar;
+        // Build $set payload — this handles BOTH insert and update cases
+        const setPayload: any = {
+            email,
+            googleId: data.googleId ?? null,
+            name: (data.name && data.name !== 'undefined') ? data.name : email.split('@')[0],
+            avatar: data.avatar ?? null,
+        };
 
         const user = await MongoUser.findOneAndUpdate(
             { email },
-            {
-                $set: updatePayload,
-                $setOnInsert: {
-                    email,
-                    name: data.name || email.split('@')[0],
-                    avatar: data.avatar || null,
-                    googleId: data.googleId || null,
-                },
-            },
-            { upsert: true, new: true, runValidators: true }
+            { $set: setPayload },
+            { upsert: true, returnDocument: 'after', runValidators: true }
         ).lean();
 
         return { ...user, id: user!._id };
