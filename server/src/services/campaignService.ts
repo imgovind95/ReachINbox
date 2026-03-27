@@ -1,5 +1,5 @@
 
-import { db } from '../config/db';
+import { emailJobRepo } from '../repositories/emailJobRepository';
 import { queueService } from './queueService';
 import { CampaignInput } from '../validators/campaignValidator';
 import { logger } from '../utils/logger';
@@ -20,23 +20,23 @@ export class CampaignService {
             scheduleDelay = Math.max(0, targetTime.getTime() - now.getTime());
         }
 
-        // 2. Persist Task to Database
-        const campaignTask = await db.emailJob.create({
-            data: {
-                userId: input.userId,
-                recipient: input.recipient,
-                subject: input.subject,
-                body: input.body,
-                // If delay is 0, we mark as COMPLETED immediately (The "Cheat")
-                // This gives immediate feedback to the user as "Delivered"
-                status: scheduleDelay <= 1000 ? 'COMPLETED' : 'PENDING',
-                sentAt: scheduleDelay <= 1000 ? new Date() : undefined,
-                scheduledAt: targetTime,
-                attachments: input.attachments ? JSON.parse(JSON.stringify(input.attachments)) : undefined
-            }
+        // 2. Persist Task to Database (via Repository — auto-selects Postgres or Mongo)
+        const campaignTask = await emailJobRepo.create({
+            userId: input.userId,
+            recipient: input.recipient,
+            subject: input.subject,
+            body: input.body,
+            // If delay is 0, we mark as COMPLETED immediately (The "Cheat")
+            // This gives immediate feedback to the user as "Delivered"
+            status: scheduleDelay <= 1000 ? 'COMPLETED' : 'PENDING',
+            sentAt: scheduleDelay <= 1000 ? new Date() : undefined,
+            scheduledAt: targetTime,
+            attachments: input.attachments ? JSON.parse(JSON.stringify(input.attachments)) : undefined
         });
 
         logger.info(`Campaign task created with ID: ${campaignTask.id}`);
+
+        const taskId = campaignTask.id as string;
 
         // 3. Dispatch to Queue
         try {
@@ -45,20 +45,17 @@ export class CampaignService {
                 title: input.subject,
                 content: input.body,
                 ownerId: input.userId,
-                campaignId: campaignTask.id,
+                campaignId: taskId,
                 files: input.attachments ? input.attachments.map(a => ({ filename: a.filename, data: a.content, encoding: a.encoding })) : undefined,
                 maxPerHour: input.hourlyLimit,
                 minInterval: input.minDelay
             }, scheduleDelay);
 
             // 4. Link Queue Job ID
-            await db.emailJob.update({
-                where: { id: campaignTask.id },
-                data: { jobId: jobId }
-            });
+            await emailJobRepo.update(taskId, { jobId: jobId });
 
             return {
-                taskId: campaignTask.id,
+                taskId: taskId,
                 queueId: jobId,
                 status: 'SCHEDULED'
             };
@@ -70,44 +67,18 @@ export class CampaignService {
     }
 
     public async getUserCampaigns(userId: string) {
-        return db.emailJob.findMany({
-            where: { userId },
-            orderBy: { scheduledAt: 'desc' }
-        });
+        return emailJobRepo.findByUserId(userId);
     }
 
     public async getCampaignDetails(taskId: string) {
-        const task = await db.emailJob.findUnique({
-            where: { id: taskId },
-            include: { user: { select: { name: true, email: true, avatar: true } } }
-        });
-
+        const task = await emailJobRepo.findByIdWithUser(taskId);
         if (!task) throw new AppError("Campaign task not found", 404);
         return task;
     }
 
     public async getInboxMessages(email: string) {
         logger.info(`Fetching inbox for: ${email}`);
-
-        const messages = await db.emailJob.findMany({
-            where: {
-                recipient: { equals: email, mode: 'insensitive' },
-                OR: [
-                    { status: { in: ['COMPLETED', 'FAILED'] } },
-                    {
-                        status: { in: ['PENDING', 'DELAYED'] },
-                        scheduledAt: { lte: new Date() }
-                    }
-                ]
-            },
-            include: {
-                user: {
-                    select: { name: true, email: true, avatar: true }
-                }
-            },
-            orderBy: { sentAt: 'desc' }
-        });
-
+        const messages = await emailJobRepo.findByRecipientForInbox(email);
         logger.info(`Found ${messages.length} messages for ${email}`);
         return messages;
     }

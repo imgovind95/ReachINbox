@@ -7,6 +7,7 @@ dotenv.config();
 const environmentSchema = z.object({
     PORT: z.string().default('3000'),
     DATABASE_URL: z.string(),
+    MONGODB_URL: z.string().optional().default(''),
     REDIS_HOST: z.string().default('localhost'),
     REDIS_PORT: z.string().default('6379'),
     GOOGLE_CLIENT_ID: z.string(),
@@ -15,6 +16,8 @@ const environmentSchema = z.object({
     JWT_SECRET: z.string().default('supersecret'),
     WORKER_CONCURRENCY: z.string().default('5'),
     MAX_EMAILS_PER_HOUR: z.string().default('10'),
+    DB_HEALTH_CHECK_INTERVAL: z.string().default('30000'),
+    MAX_SYNC_RETRIES: z.string().default('5'),
 });
 
 const parsedEnv = environmentSchema.safeParse(process.env);
@@ -29,6 +32,7 @@ const envCols = parsedEnv.data;
 export const config = {
     port: parseInt(envCols.PORT, 10),
     databaseUrl: envCols.DATABASE_URL,
+    mongodbUrl: envCols.MONGODB_URL,
     redisUrl: process.env.REDIS_URL,
     redis: {
         host: envCols.REDIS_HOST,
@@ -42,5 +46,7 @@ export const config = {
     clientUrl: envCols.CLIENT_URL,
     jwtSecret: envCols.JWT_SECRET,
     workerConcurrency: parseInt(envCols.WORKER_CONCURRENCY, 10),
-    maxEmailsPerHour: parseInt(envCols.MAX_EMAILS_PER_HOUR, 10)
+    maxEmailsPerHour: parseInt(envCols.MAX_EMAILS_PER_HOUR, 10),
+    dbHealthCheckInterval: parseInt(envCols.DB_HEALTH_CHECK_INTERVAL, 10),
+    maxSyncRetries: parseInt(envCols.MAX_SYNC_RETRIES, 10),
 };

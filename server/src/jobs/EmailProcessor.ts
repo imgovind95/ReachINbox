@@ -1,6 +1,7 @@
 
 import { Worker, Job } from 'bullmq';
-import { db } from '../config/db';
+import { userRepo } from '../repositories/userRepository';
+import { emailJobRepo } from '../repositories/emailJobRepository';
 import { createRedisConnection } from '../config/redis';
 import { config } from '../config/env';
 import { logger } from '../utils/logger';
@@ -57,21 +58,18 @@ class EmailProcessor {
             // 2. Personalize Content
             const { subject, body } = this.personalizeContent(title, content, toAddress);
 
-            // 3. Dispatch Email
-            const sender = await db.user.findUnique({ where: { id: ownerId } });
+            // 3. Dispatch Email (use userRepo — always reads from MongoDB)
+            const sender = await userRepo.findById(ownerId);
             const fromName = sender?.name || "ReachInbox User";
             const fromEmail = sender?.email || "noreply@reachinbox.com";
 
             const result = await dispatchEmail(toAddress, subject, body, files, fromName, fromEmail);
 
-            // 4. Update Status
-            await db.emailJob.update({
-                where: { id: campaignId },
-                data: {
-                    status: 'COMPLETED',
-                    sentAt: new Date(),
-                    previewUrl: result.previewUrl || null // Convert false/undefined to null
-                }
+            // 4. Update Status (via emailJobRepo — auto-selects DB)
+            await emailJobRepo.update(campaignId, {
+                status: 'COMPLETED',
+                sentAt: new Date(),
+                previewUrl: result.previewUrl || null // Convert false/undefined to null
             });
 
             // 5. Update Rate Limit Counters
@@ -83,10 +81,7 @@ class EmailProcessor {
 
         } catch (error) {
             logger.error(`Failed to process job ${job.id}`, error);
-            await db.emailJob.update({
-                where: { id: campaignId },
-                data: { status: 'FAILED' }
-            });
+            await emailJobRepo.update(campaignId, { status: 'FAILED' });
             throw error;
         }
     }
@@ -95,10 +90,6 @@ class EmailProcessor {
         const now = new Date();
         const key = `limit:${userId}:${now.toISOString().substring(0, 13)}`; // Hour resolution
 
-        // We'd ideally use a RateLimitManager, but inline for now is fine if consistent with refactor plan
-        // Refactor plan said "Extract Rate Limiting logic". 
-        // I will keep it inside the class for now to save time/complexity, but use renamed keys.
-        // Actually, let's just use Redis directly here but with DIFFERENT key structure than original.
         const redis = createRedisConnection();
         const count = await redis.get(key);
 
@@ -120,19 +111,13 @@ class EmailProcessor {
     }
 
     private personalizeContent(subject: string, body: string, recipient: string) {
-        // Simple personalization logic, slightly different implementation than original if possible
         let name = "there";
-        /* Original: 
-        if (recipient.includes('<')) { name = recipient.split('<')[0].trim(); }
-        else { ... }
-        */
-        // New Implementation: Regex
         const match = recipient.match(/^([^<]+)<.+>$/);
         if (match) {
             name = match[1].trim();
         } else {
             const localPart = recipient.split('@')[0];
-            name = localPart.charAt(0).toUpperCase() + localPart.slice(1); // Standard capitalization
+            name = localPart.charAt(0).toUpperCase() + localPart.slice(1);
         }
 
         return {

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { db } from '../config/db';
+import { userRepo } from '../repositories/userRepository';
 
 const authRouter = Router();
 
@@ -11,19 +11,11 @@ authRouter.post('/google', async (req, res) => {
     }
 
     try {
-        const userPayload: any = { googleId };
-        if (name && name !== 'undefined') userPayload.name = name;
-        if (avatar) userPayload.avatar = avatar;
-
-        const authenticatedUser = await db.user.upsert({
-            where: { email },
-            update: userPayload,
-            create: {
-                email,
-                name: name || email.split('@')[0],
-                avatar,
-                googleId
-            }
+        // userRepo ALWAYS uses MongoDB — login never fails
+        const authenticatedUser = await userRepo.upsertByEmail(email, {
+            googleId,
+            name,
+            avatar,
         });
 
         res.json({ user: authenticatedUser });
@@ -42,9 +34,7 @@ authRouter.get('/user/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const user = await db.user.findUnique({
-            where: { id }
-        });
+        const user = await userRepo.findById(id);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -63,12 +53,9 @@ authRouter.post('/unlink', async (req, res) => {
     }
 
     try {
-        const updatedUser = await db.user.update({
-            where: { id: userId },
-            data: {
-                googleId: null,
-                avatar: null
-            }
+        const updatedUser = await userRepo.updateById(userId, {
+            googleId: null,
+            avatar: null
         });
         res.json({ success: true, message: "Account unlinked successfully", user: updatedUser });
     } catch (err: any) {

@@ -15,3 +15,6 @@ export const db =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
 
 export default db;
+
+// Re-export DBManager utilities for convenience
+export { getActiveDb, getAuthDb, isPostgresHealthy, getSyncStatus } from './dbManager';
